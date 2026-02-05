@@ -1,9 +1,23 @@
-services:
+version: '3.8'   # or '3.9' — modern versions support this syntax well
 
+services:
   app:
     build: .
     ports:
       - "8000:8000"
+    deploy:                          # ← Add this block for GPU
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all             # or count: 1 if you want only one GPU
+              capabilities: [gpu]
+    shm_size: 2g                     # ← Recommended: helps with CUDA large matrix ops / avoids OOM
+    # Optional extras if needed:
+    # restart: unless-stopped
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
+    #   - NVIDIA_DRIVER_CAPABILITIES=compute,utility
 
   prometheus:
     image: prom/prometheus
@@ -16,3 +30,5 @@ services:
     image: grafana/grafana
     ports:
       - "3333:3000"
+    # Optional: give Grafana more memory if you have many panels/dashboards
+    # mem_limit: 2g
