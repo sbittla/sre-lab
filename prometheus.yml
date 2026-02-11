@@ -5,3 +5,8 @@ scrape_configs:
   - job_name: "demo-app"
     static_configs:
       - targets: ["app:8000"]
+
+  - job_name: 'spring-app'  # New: Scrapes your Spring Boot app
+    metrics_path: '/actuator/prometheus'  # The endpoint path
+    static_configs:
+      - targets: ['spring-prom-app:8080']  # Container name + internal port (works via shared network)
